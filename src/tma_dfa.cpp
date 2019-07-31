@@ -2,7 +2,7 @@
  *  Licensed by "The MIT License". See file LICENSE.
  */
 
-#include "dfa.hpp"
+#include "tma_dfa.hpp"
 
 /* Start of differential fault analysis */
 vector<State> analyse(State &c, State &d, const size_t l, const size_t cores)
@@ -487,7 +487,7 @@ int main(int argc, char **argv)
 
         /* Create new output file */
         stringstream ss;
-        ss << "keys-" << i << ".csv";
+        ss << "res/" << i << ".csv";
         FILE * outfile;
         const string name = ss.str();
         outfile = fopen(name.c_str(), "w");

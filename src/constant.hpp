@@ -2,8 +2,8 @@
  *  Licensed by "The MIT License". See file LICENSE.
  */
 
-#ifndef TABLES_H
-#define TABLES_H
+#ifndef CONSTANT_H
+#define CONSTANT_H
 
 using std::uint8_t;
 

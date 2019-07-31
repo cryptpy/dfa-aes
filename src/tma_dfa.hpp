@@ -2,8 +2,8 @@
  *  Licensed by "The MIT License". See file LICENSE.
  */
 
-#ifndef DFA_H
-#define DFA_H
+#ifndef TMA_DFA_H
+#define TMA_DFA_H
 
 #include <algorithm>
 #include <array>
@@ -22,7 +22,7 @@
 #include <string.h>
 #include <vector>
 
-#include "tables.hpp"
+#include "constant.hpp"
 
 using namespace std;
 

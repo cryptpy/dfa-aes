@@ -2,14 +2,12 @@
 ---
 
 #### LICENSE
-This program is free software; see [LICENSE][3] for more details.
+This program is free software; see [LICENSE](https://github.com/cryptpy/dfa-aes/blob/master/LICENSE) for more details.
 
 #### REQUIREMENTS
 * gcc-4.8.1 or newer.
 * Multi-core support via [OpenMP](http://openmp.org/).
 * Workstation with at least 32 cores (recommended).
-* Python 3.0 or newer.
-* Numpy 1.16 or newer.
 
 #### ATTACK
 This repository is the implementation of the DFA attack from Tunstall, Mukhopadhyay and Ali using a single fault injection.

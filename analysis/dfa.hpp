@@ -1,9 +1,10 @@
-//
-// Licensed by "The MIT License". See file LICENSE.
-//
+/**
+ *  Licensed by "The MIT License". See file LICENSE.
+ */
 
 #ifndef DFA_H
 #define DFA_H
+
 #include <algorithm>
 #include <array>
 #include <climits>
@@ -26,53 +27,75 @@
 using namespace std;
 
 /* 4-byte array */
-using KeyTuple = array<uint8_t, 4>;
+using KeyTuple = array<uint8_t, 0x4>;
 
 /* 16-byte state */
-using State = array<uint8_t, 16>;
+using State = array<uint8_t, 0x10>;
 
-/* data structure for differentials */
-using DiffStat = array<multimap<uint8_t,uint8_t>, 16>;
+/* Data structure for differentials */
+using DiffStat = array<multimap<uint8_t,uint8_t>, 0x10>;
 
-/* data structure for vector of key candidate tuples */
+/* Data structure for vector of key candidate tuples */
 using VKeyTuple = vector<KeyTuple>;
 
-/* galois multiplication tables */
-static map <uint8_t, const uint8_t*> gmt = { {0x01, gm_01}, {0x09, gm_09}, {0x0b, gm_0b}, {0x0d, gm_0d}, {0x0e, gm_0e}, {0x8d, gm_8d}, {0xf6, gm_f6} };
+/* Galois multiplication tables */
+static map<uint8_t, const uint8_t*> gmt =
+{
+    {0x01, gm_01},
+    {0x09, gm_09},
+    {0x0b, gm_0b},
+    {0x0d, gm_0d},
+    {0x0e, gm_0e},
+    {0x8d, gm_8d},
+    {0xf6, gm_f6}
+};
 
-/* related bytes (column-wise) */
-static const uint8_t rb[4][4] = { {0,7,10,13},{1,4,11,14},{2,5,8,15},{3,6,9,12} };
+/* Related bytes (column-wise) */
+static const uint8_t rb[0x4][0x4] =
+{
+    {0x0, 0x7, 0xa, 0xd},
+    {0x1, 0x4, 0xb, 0xe},
+    {0x2, 0x5, 0x8, 0xf},
+    {0x3, 0x6, 0x9, 0xc}
+};
 
 /* Maps a fault location 'l' to the correct set of fault deltas for the standard filter. Note: 'l' is enumerated column-wise */
-static const size_t map_fault[16] = {0,1,2,3,3,0,1,2,2,3,0,1,1,2,3,0};
+static const size_t map_fault[0x10] = {0x0, 0x1, 0x2, 0x3, 0x3, 0x0, 0x1, 0x2, 0x2, 0x3, 0x0, 0x1, 0x1, 0x2, 0x3, 0x0};
 
-/* pointer to inverses of fault deltas in GF(256) for the standard filter (depend on the fault location) */
-static const uint8_t* ideltas1[4][16] = {
-  {gm_8d, gm_01, gm_8d, gm_01, gm_01, gm_f6, gm_01, gm_f6, gm_01, gm_8d, gm_01, gm_8d, gm_f6, gm_01, gm_f6, gm_01},
-  {gm_01, gm_f6, gm_01, gm_f6, gm_01, gm_8d, gm_01, gm_8d, gm_f6, gm_01, gm_f6, gm_01, gm_8d, gm_01, gm_8d, gm_01},
-  {gm_01, gm_8d, gm_01, gm_8d, gm_f6, gm_01, gm_f6, gm_01, gm_8d, gm_01, gm_8d, gm_01, gm_01, gm_f6, gm_01, gm_f6},
-  {gm_f6, gm_01, gm_f6, gm_01, gm_8d, gm_01, gm_8d, gm_01, gm_01, gm_f6, gm_01, gm_f6, gm_01, gm_8d, gm_01, gm_8d}
+/* Pointer to inverses of fault deltas in GF(256) for the standard filter (depend on the fault location) */
+static const uint8_t* ideltas1[0x4][0x10] = 
+{
+    {gm_8d, gm_01, gm_8d, gm_01, gm_01, gm_f6, gm_01, gm_f6, gm_01, gm_8d, gm_01, gm_8d, gm_f6, gm_01, gm_f6, gm_01},
+    {gm_01, gm_f6, gm_01, gm_f6, gm_01, gm_8d, gm_01, gm_8d, gm_f6, gm_01, gm_f6, gm_01, gm_8d, gm_01, gm_8d, gm_01},
+    {gm_01, gm_8d, gm_01, gm_8d, gm_f6, gm_01, gm_f6, gm_01, gm_8d, gm_01, gm_8d, gm_01, gm_01, gm_f6, gm_01, gm_f6},
+    {gm_f6, gm_01, gm_f6, gm_01, gm_8d, gm_01, gm_8d, gm_01, gm_01, gm_f6, gm_01, gm_f6, gm_01, gm_8d, gm_01, gm_8d}
 };
 
-/* pointer to inverses of fault deltas in GF(256) for the improved filter (depend on the fault location) */
-static const uint8_t* ideltas2[4][4] = {
-  {gm_8d,gm_01,gm_01,gm_f6}, {gm_f6,gm_8d,gm_01,gm_01}, {gm_01,gm_f6,gm_8d,gm_01}, {gm_01,gm_01,gm_f6,gm_8d}
+/* Pointer to inverses of fault deltas in GF(256) for the improved filter (depend on the fault location) */
+static const uint8_t* ideltas2[0x4][0x4] =
+{
+    {gm_8d, gm_01, gm_01, gm_f6},
+    {gm_f6, gm_8d, gm_01, gm_01},
+    {gm_01, gm_f6, gm_8d, gm_01},
+    {gm_01, gm_01, gm_f6, gm_8d}
 };
 
-/* indices for c,d and the 10-th round key k (improved fault equations) */
-static const size_t indices_x[4][16] = {
-  { 0,13,10, 7,  12, 9, 6, 3,   8, 5, 2,15,   4, 1,14,11},
-  {12, 9, 6, 3,   8, 5, 2,15,   4, 1,14,11,   0,13,10, 7},
-  { 8, 5, 2,15,   4, 1,14,11,   0,13,10, 7,  12, 9, 6, 3},
-  { 4, 1,14,11,   0,13,10, 7,  12, 9, 6, 3,   8, 5, 2,15}
+/* indices for c,d and the 0xa-th round key k (improved fault equations) */
+static const size_t indices_x[0x4][0x10] =
+{
+    {0x0, 0xd, 0xa, 0x7, 0xc, 0x9, 0x6, 0x3, 0x8, 0x5, 0x2, 0xf, 0x4, 0x1, 0xe, 0xb},
+    {0xc, 0x9, 0x6, 0x3, 0x8, 0x5, 0x2, 0xf, 0x4, 0x1, 0xe, 0xb, 0x0, 0xd, 0xa, 0x7},
+    {0x8, 0x5, 0x2, 0xf, 0x4, 0x1, 0xe, 0xb, 0x0, 0xd, 0xa, 0x7, 0xc, 0x9, 0x6, 0x3},
+    {0x4, 0x1, 0xe, 0xb, 0x0, 0xd, 0xa, 0x7, 0xc, 0x9, 0x6, 0x3, 0x8, 0x5, 0x2, 0xf}
 };
 
-/* indices for the 9-th round key h (improved fault equations)*/
-static const size_t indices_y[4][16] = {
-  { 0, 1, 2, 3,  12,13,14,15,   8, 9,10,11,   4, 5, 6, 7},
-  {12,13,14,15,   8, 9,10,11,   4, 5, 6, 7,   0, 1, 2, 3},
-  { 8, 9,10,11,   4, 5, 6, 7,   0, 1, 2, 3,  12,13,14,15},
-  { 4, 5, 6, 7,   0, 1, 2, 3,  12,13,14,15,   8, 9,10,11}
+/* Indices for the 0x9-th round key h (improved fault equations)*/
+static const size_t indices_y[0x4][16] =
+{
+    {0x0, 0x1, 0x2, 0x3, 0xc, 0xd, 0xe, 0xf, 0x8, 0x9, 0xa, 0xb, 0x4, 0x5, 0x6, 0x7},
+    {0xc, 0xd, 0xe, 0xf, 0x8, 0x9, 0xa, 0xb, 0x4, 0x5, 0x6, 0x7, 0x0, 0x1, 0x2, 0x3},
+    {0x8, 0x9, 0xa, 0xb, 0x4, 0x5, 0x6, 0x7, 0x0, 0x1, 0x2, 0x3, 0xc, 0xd, 0xe, 0xf},
+    {0x4, 0x5, 0x6, 0x7, 0x0, 0x1, 0x2, 0x3, 0xc, 0xd, 0xe, 0xf, 0x8, 0x9, 0xa, 0xb}
 };
 
 vector<State> analyse(State &c, State &d, const size_t l, const size_t cores);
@@ -93,34 +116,35 @@ State reconstruct(State &k);
 
 uint32_t ks_core(uint32_t t, size_t r);
 
-vector<uint8_t> getKeys(multimap<uint8_t,uint8_t> m);
+vector<uint8_t> getKeys(multimap<uint8_t, uint8_t> m);
 
 void printState(State x);
 
-vector<pair<State,State>> readfile();
+vector<pair<State, State>> readfile();
 
 void writefile(vector<State> keys, const string file);
 
-static uint8_t EQ(const uint8_t c, const uint8_t d, const uint8_t k, const uint8_t* gm) {
-  return gm[ isbox[c^k] ^ isbox[d^k] ];
+static uint8_t EQ(const uint8_t c, const uint8_t d, const uint8_t k, const uint8_t* gm)
+{
+    return gm[isbox[c ^ k] ^ isbox[d ^ k]];
 }
 
 template<typename T>
 static constexpr size_t bits(T = T{})
 {
-  return sizeof(T) * CHAR_BIT;
+    return sizeof(T) * CHAR_BIT;
 }
 
 template<typename T>
 static constexpr T ROTL(const T x, const unsigned c)
 {
-  return (x << c) | (x >> (bits(x) - c));
+    return (x << c) | (x >> (bits(x) - c));
 }
 
 template<typename T>
 static constexpr T ROTR(const T x, const unsigned c)
 {
-  return (x >> c) | (x << (bits(x) - c));
+    return (x >> c) | (x << (bits(x) - c));
 }
 
 #endif

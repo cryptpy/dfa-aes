@@ -18,7 +18,7 @@ To execute the attack, some conditions are necessary. Since it's a DFA attack, a
 
 The attack reduces to about 256 possible master keys.
 
-For more informations the original can be found [here](https://eprint.iacr.org/2009/575.pdf).
+For more informations the original paper can be found [here](https://eprint.iacr.org/2009/575.pdf).
 
 #### USAGE
 **Note:** Some Computations might take quite some time, especially in the case where the fault location is not known and if too few cores are available.
